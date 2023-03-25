@@ -41,7 +41,7 @@ jobs:
         curl -L --progress-bar --location "$EKSCTL_URL" -o eksctl.tar.gz
         tar -xzf eksctl.tar.gz --wildcards --no-anchored 'eksctl' -O > linux-64/eksctl
 
-    - name: Build and publish eksctl Conda package
+    - name: Build eksctl Conda package
       run: |
         mkdir -p recipe
         cat > recipe/meta.yaml <<EOL
@@ -80,8 +80,13 @@ jobs:
         conda config --add pkgs_dirs ~/conda_pkgs_dir
         conda build recipe
 
-        ls -alh
+    - name: Create Conda Channel Directory Structure
+      run: |
+        mkdir -p conda-channel/linux-64
+        cp /usr/share/miniconda/conda-bld/linux-64/eksctl*.tar.bz2 conda-channel/linux-64/
+        conda index conda-channel/linux-64
 
-        conda index linux-64
-
-        ls -alh
+    - name: Upload Conda Channel as GitHub Pages Artifact
+      uses: actions/upload-pages-artifact@v1.0.8
+      with:
+        path: conda-channel/
