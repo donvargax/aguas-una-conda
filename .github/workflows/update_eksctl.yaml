@@ -22,7 +22,6 @@ jobs:
         channels: conda-forge
 
     - name: Install conda-build
-      shell: bash -l {0}
       run: conda install conda-build
 
     - name: Download latest eksctl release
@@ -33,7 +32,6 @@ jobs:
         tar -xzf eksctl.tar.gz -C linux-64 --strip-components=1 eksctl
 
     - name: Build and publish eksctl Conda package
-      shell: bash -l {0}
       run: |
         mkdir -p recipe
         cat > recipe/meta.yaml <<EOL
@@ -62,9 +60,4 @@ jobs:
 
         conda build recipe
         conda index linux-64
-        git add -A
-        git config user.name "GitHub Actions"
-        git config user.email "noreply@github.com"
-        git commit -m "Update eksctl to version $(curl --silent https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq -r '.tag_name' | sed 's/^v//')"
-        git push
-
+        ls -alh
