@@ -1,0 +1,72 @@
+name: Update eksctl
+
+on:
+  push:
+  schedule:
+    # Run the workflow every day at 00:00 UTC
+    - cron: "0 0 * * *"
+
+jobs:
+  update_eksctl:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        ref: gh-pages
+
+    - name: Setup conda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        python-version: "3.9"
+        channels: conda-forge
+
+    - name: Install conda-build
+      shell: bash -l {0}
+      run: conda install conda-build
+
+    - name: Download latest eksctl release
+      run: |
+        EKSCTL_URL=$(curl --silent https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq -r '.assets[] | select(.name | contains("linux_amd64.tar.gz")).browser_download_url')
+        mkdir -p linux-64
+        curl -L --progress-bar --location "$EKSCTL_URL" -o eksctl.tar.gz
+        tar -xzf eksctl.tar.gz -C linux-64 --strip-components=1 eksctl
+
+    - name: Build and publish eksctl Conda package
+      shell: bash -l {0}
+      run: |
+        mkdir -p recipe
+        cat > recipe/meta.yaml <<EOL
+        package:
+          name: eksctl
+          version: $(curl --silent https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+
+        source:
+          path: ../linux-64
+
+        build:
+          number: 0
+          binary_relocation: false
+          script: cp -r $SRC_DIR/* $PREFIX/bin
+
+        test:
+          commands:
+            - eksctl version
+
+        about:
+          home: https://github.com/weaveworks/eksctl
+          license: Apache-2.0
+          summary: A CLI for Amazon EKS
+          description: eksctl is a simple CLI tool for creating and managing clusters on EKS - Amazon's managed Kubernetes service for EC2.
+        EOL
+
+        conda build recipe
+        conda index linux-64
+        git add -A
+        git config user.name "GitHub Actions"
+        git config user.email "noreply@github.com"
+        git commit -m "Update eksctl to version $(curl --silent https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq -r '.tag_name' | sed 's/^v//')"
+        git push
+
