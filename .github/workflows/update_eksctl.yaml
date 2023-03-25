@@ -58,6 +58,12 @@ jobs:
           description: eksctl is a simple CLI tool for creating and managing clusters on EKS - Amazon's managed Kubernetes service for EC2.
         EOL
 
+        ls -alh
+
         conda build recipe
+
+        ls -alh
+
         conda index linux-64
+
         ls -alh
