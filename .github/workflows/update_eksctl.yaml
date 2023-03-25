@@ -57,7 +57,9 @@ jobs:
         build:
           number: 0
           binary_relocation: false
-          script: cp -r $SRC_DIR/* $PREFIX/bin
+          script: |
+            mkdir -p $PREFIX/bin
+            cp -r $SRC_DIR/* $PREFIX/bin
 
         test:
           commands:
