@@ -29,7 +29,7 @@ jobs:
         EKSCTL_URL=$(curl --silent https://api.github.com/repos/weaveworks/eksctl/releases/latest | jq -r '.assets[] | select(.name | ascii_downcase | contains("linux_amd64.tar.gz")).browser_download_url')
         mkdir -p linux-64
         curl -L --progress-bar --location "$EKSCTL_URL" -o eksctl.tar.gz
-        tar -xzf eksctl.tar.gz -C linux-64 --strip-components=1 eksctl
+        tar -xzf eksctl.tar.gz --wildcards --no-anchored 'eksctl' -O > linux-64/eksctl
 
     - name: Build and publish eksctl Conda package
       run: |
