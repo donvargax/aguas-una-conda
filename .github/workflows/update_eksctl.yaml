@@ -60,6 +60,7 @@ jobs:
           script: |
             mkdir -p $PREFIX/bin
             cp -r $SRC_DIR/* $PREFIX/bin
+            chmod +x $PREFIX/bin/eksctl
 
         test:
           commands:
