@@ -81,11 +81,13 @@ jobs:
 
         conda config --add pkgs_dirs ~/conda_pkgs_dir
         conda build recipe
+        CONDA_BLD_DIR="$(micromamba info --json | jq -r '.["env location"]')/conda-bld"
+        echo "CONDA_BLD_DIR=$CONDA_BLD_DIR" >> $GITHUB_ENV
 
     - name: Create Conda Channel Directory Structure
       run: |
         mkdir -p conda-channel/linux-64
-        cp /usr/share/miniconda/conda-bld/linux-64/eksctl*.tar.bz2 conda-channel/linux-64/
+        cp $CONDA_BLD_DIR/linux-64/eksctl*.tar.bz2 conda-channel/linux-64/
         conda index conda-channel/linux-64
 
     - name: Setup Pages
