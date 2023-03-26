@@ -75,7 +75,6 @@ jobs:
           description: eksctl is a simple CLI tool for creating and managing clusters on EKS - Amazon's managed Kubernetes service for EC2.
         EOL
 
-        micromamba install -y -c conda-forge conda-build
         conda config --add pkgs_dirs ~/conda_pkgs_dir
         conda build recipe
 
