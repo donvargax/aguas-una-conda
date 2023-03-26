@@ -29,6 +29,7 @@ jobs:
     - name: Setup micromamba
       uses: mamba-org/provision-with-micromamba@v15
       with:
+        environment-file: false
         cache-downloads: true
         cache-env: true
         channels: conda-forge
