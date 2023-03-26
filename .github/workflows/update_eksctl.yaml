@@ -26,19 +26,13 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Setup Micromamba
-      run: |
-        curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj -C ~
-        echo "$HOME/bin" >> $GITHUB_PATH
-
-    - name: Cache Conda Packages
-      uses: actions/cache@v2
+    - name: Setup micromamba
+      uses: mamba-org/provision-with-micromamba@v15
       with:
-        path: ~/conda_pkgs_dir
-        key: ${{ runner.os }}-conda-${{ hashFiles('**/recipe/meta.yml') }}
-        #key: ${{ runner.os }}-conda-${{ hashFiles('**/environment.yml') }}
-        restore-keys: |
-          ${{ runner.os }}-conda-
+        cache-downloads: true
+        cache-env: true
+        channels: conda-forge
+        extra-specs: conda-build
 
     - name: Download latest eksctl release
       run: |
